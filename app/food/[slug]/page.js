@@ -3,14 +3,14 @@
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/app/firebase/config';
 import { useRouter } from 'next/navigation';
-import { use, useEffect, useState } from 'react';
-import Link from 'next/link'
+import { use, useEffect } from 'react';
+import Link from 'next/link';
 
 export default function Page({ params }) {
   const [user, loading] = useAuthState(auth);
   const router = useRouter();
-  const resolvedParams = use(params); // Unwrap the params Promise
-  const slug = resolvedParams.slug; // Access the slug after unwrapping
+  const resolvedParams = use(params);
+  const slug = resolvedParams.slug;
 
   useEffect(() => {
     if (loading) return;

@@ -21,7 +21,7 @@ export default function Home() {
   useEffect(() => {
     const fetchFoodData = async () => {
       try {
-        const res = await fetch("/api/food");
+        const res = await fetch("/api/getFood");
         const data = await res.json();
         setFoodData(data);
       } catch (error) {
@@ -32,6 +32,10 @@ export default function Home() {
   }, []);
 
   if (loading) return <div>Loading Resources...</div>
+
+  function clicked() {
+    console.log("Clicked");
+  };
 
   if (user?.email != process.env.NEXT_PUBLIC_WHITELISTED_EMAIL) {
     return (
@@ -58,9 +62,10 @@ export default function Home() {
         </div>
         <div id="items">
           {foodData.map((food) => (
-            <div className="item">
-              <p>{food.name}</p>
-              <a href={`/food/${food.name}`}>Add</a>
+            <div className="item flex gap-x-20">
+              <p onClick={() => clicked()}>{food.name}</p>
+              <a href={`/food/edit/${food.name}`}>Edit</a>
+              <a href={`/food/${food.name}`}>+</a>
             </div>
           ))}
         </div>
