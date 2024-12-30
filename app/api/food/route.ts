@@ -10,7 +10,7 @@ export async function GET(request: Request) {
     // Connect to db
     const connection = await mysql.createConnection(connectionParams)
 
-    let query = 'SELECT * FROM users'
+    let query = 'SELECT * FROM foods'
     let values: any[] = []
 
     // Execute and get results
