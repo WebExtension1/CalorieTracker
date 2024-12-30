@@ -7,15 +7,16 @@ import { signOut } from 'firebase/auth';
 import { useEffect, useState } from 'react';
 
 export default function Home() {
-  const [user] = useAuthState(auth);
+  const [user, loading] = useAuthState(auth);
   const router = useRouter();
   const [foodData, setFoodData] = useState([]);
 
   useEffect(() => {
+    if (loading) return;
     if (!user) {
       router.push('/login');
     }
-  }, [user, router]);
+  }, [user, loading, router]);
   
   useEffect(() => {
     const fetchFoodData = async () => {
@@ -25,13 +26,12 @@ export default function Home() {
         setFoodData(data);
       } catch (error) {
         console.error("Error fetching food data:", error);
-      } finally {
-        setLoading(false);
       }
     };
     fetchFoodData();
   }, []);
-  
+
+  if (loading) return <div>Loading Resources...</div>
 
   if (user?.email != process.env.NEXT_PUBLIC_WHITELISTED_EMAIL) {
     return (
@@ -52,13 +52,13 @@ export default function Home() {
         <div id="stats">
           <p>Here would display the stats</p>
         </div>
-        <div class="flex gap-x-7">
-          <p id="food" class="underline">Food</p>
+        <div className="flex gap-x-7">
+          <p id="food" className="underline">Food</p>
           <p id="condiments">Condiments</p>
         </div>
         <div id="items">
           {foodData.map((food) => (
-            <div class="item">
+            <div className="item">
               <p>{food.name}</p>
               <a href={`/food/${food.name}`}>Add</a>
             </div>
