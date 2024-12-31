@@ -24,6 +24,7 @@ INSERT INTO foods (foodID, name, calories, typeID) VALUES
 
 CREATE TABLE If Not Exists history (
     foodID int,
+    quantity int,
     eatenDate date DEFAULT current_timestamp(),
     FOREIGN KEY (foodID) REFERENCES foods (foodID)
 );

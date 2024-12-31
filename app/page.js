@@ -84,7 +84,7 @@ export default function Home() {
             <div key={food.name} className="item flex gap-x-20">
               <p onClick={() => clicked()}>{food.name}</p>
               <a href={`/food/edit/${food.name}`}>Edit</a>
-              <a href={`/food/${food.name}`}>+</a>
+              {filterType === 1 ? <a href={`/food/${food.name}`}>+</a> : ""}
             </div>
           ))}
         </div>

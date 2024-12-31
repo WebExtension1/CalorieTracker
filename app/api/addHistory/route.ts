@@ -5,24 +5,29 @@ import { GetDBSettings, IDBSettings } from '@/sharedCode/common'
 // Get the connection parameters
 let connectionParams = GetDBSettings()
 
-export async function GET(request: Request) {
+export async function POST(request: Request) {
   try {
-    const url = new URL(request.url);
-    const typeID = url.searchParams.get("typeID");
-    
+    const { name, quantity } = await request.json();
+
+    if (!name || !quantity) {
+        console.error("Missing parameters");
+        return NextResponse.json({ error: 'Missing parameters' }, { status: 400 });
+    }
+
     // Connect to db
     const connection = await mysql.createConnection(connectionParams)
 
-    let query = 'SELECT * FROM foods'
-    let values: any[] = []
-
-    if (typeID) {
-      query += ' WHERE typeID = ?'
-      values.push(Number(typeID)); // Ensure it's a number
-    }
+    let query = 'SELECT foodID FROM foods WHERE name = ?'
+    let values = [name.replace("%20", " ")];
 
     // Execute and get results
-    const [results] = await connection.execute(query, values)
+    let [results]: [Array<{ foodID: number }>, any] = await connection.execute(query, values);
+
+    query = 'INSERT INTO history (foodID, quantity) VALUES (?, ?)';
+    values = [results[0].foodID, quantity];
+
+    // Execute and get results
+    [results] = await connection.execute(query, values)
 
     // Close db connection
     connection.end()
