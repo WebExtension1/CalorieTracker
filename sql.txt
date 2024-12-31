@@ -1,0 +1,29 @@
+CREATE TABLE If Not Exists types (
+    typeID int AUTO_INCREMENT,
+    name text,
+    PRIMARY KEY (typeID)
+);
+INSERT INTO types (typeID, name) VALUES
+(1, "food"),
+(2, "condiment");
+
+CREATE TABLE If Not Exists foods (
+    foodID int AUTO_INCREMENT,
+    name text,
+    calories int,
+    typeID int,
+    PRIMARY KEY (foodID),
+    FOREIGN KEY (typeID) REFERENCES types (typeID)
+);
+INSERT INTO foods (foodID, name, calories, typeID) VALUES
+(1, "Food 1", 50, 1),
+(2, "Food 2", 100, 1),
+(3, "Food 3", 150, 1),
+(4, "Condiment 1", 75, 2),
+(5, "Condiment 2", 125, 2);
+
+CREATE TABLE If Not Exists history (
+    foodID int,
+    eatenDate date DEFAULT current_timestamp(),
+    FOREIGN KEY (foodID) REFERENCES foods (foodID)
+);

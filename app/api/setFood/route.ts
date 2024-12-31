@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     const connection = await mysql.createConnection(connectionParams)
 
     let query = 'UPDATE foods SET calories = ? WHERE name = ?'
-    let values = [calories, name];
+    let values = [calories, name.replace("%20", " ")];
 
     // Execute and get results
     const [results] = await connection.execute(query, values)

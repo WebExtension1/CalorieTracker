@@ -36,7 +36,7 @@ export default function Page({ params }) {
                 // alert('Calories updated successfully');
             }
         } catch (err) {
-            // alert('An error occurred. Please try again later.');
+            alert('An error occurred. Please try again later.');
         }
     }
 
@@ -55,14 +55,14 @@ export default function Page({ params }) {
                 router.push("/");
             }
         } catch (err) {
-            // alert('An error occurred. Please try again later.');
+            alert('An error occurred. Please try again later.');
         }
     }
 
     return(
         <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
             <Link href="/">Back to Dashboard</Link>
-            <h1>{slug}</h1>
+            <h1>{slug.replace("%20", " ")}</h1>
             <form onSubmit={handleUpdate}>
                 <p>Calories</p>
                 <input

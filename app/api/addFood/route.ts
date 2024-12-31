@@ -7,17 +7,18 @@ let connectionParams = GetDBSettings()
 
 export async function POST(request: Request) {
   try {
-    const { name } = await request.json();
+    const { name, calories, type } = await request.json();
 
-    if (!name) {
-      return NextResponse.json({ error: 'Missing parameters' }, { status: 400 });
+    if (!name || !calories) {
+        console.error("Missing parameters");
+        return NextResponse.json({ error: 'Missing parameters' }, { status: 400 });
     }
 
     // Connect to db
     const connection = await mysql.createConnection(connectionParams)
 
-    let query = 'DELETE FROM foods WHERE name = ?'
-    let values = [name.replace("%20", " ")];
+    let query = 'INSERT INTO foods (name, calories, typeID) VALUES (?, ?, ?)';
+    let values = [name.replace("%20", " "), calories, type];
 
     // Execute and get results
     const [results] = await connection.execute(query, values)

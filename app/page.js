@@ -10,6 +10,8 @@ export default function Home() {
   const [user, loading] = useAuthState(auth);
   const router = useRouter();
   const [foodData, setFoodData] = useState([]);
+  const [filterType, setFilterType] = useState(1);
+  const filteredData = foodData.filter((food) => food.typeID === filterType);
 
   useEffect(() => {
     if (loading) return;
@@ -30,6 +32,10 @@ export default function Home() {
     };
     fetchFoodData();
   }, []);
+
+  async function addNew() {
+    router.push(`/food/new/${filterType}`);
+  };
 
   if (loading) return <div>Loading Resources...</div>
 
@@ -57,12 +63,25 @@ export default function Home() {
           <p>Here would display the stats</p>
         </div>
         <div className="flex gap-x-7">
-          <p id="food" className="underline">Food</p>
-          <p id="condiments">Condiments</p>
+          <p
+            id="food"
+            className={`${filterType === 1 ? "font-bold underline" : ""}`}
+            onClick={() => setFilterType(1)}
+          >
+            Food
+          </p>
+          <p
+            id="condiments"
+            className={`${filterType === 2 ? "font-bold underline" : ""}`}
+            onClick={() => setFilterType(2)}
+          >
+            Condiments
+          </p>
         </div>
+        <button onClick={() => addNew()}>Add New</button>
         <div id="items">
-          {foodData.map((food) => (
-            <div className="item flex gap-x-20">
+          {filteredData.map((food) => (
+            <div key={food.name} className="item flex gap-x-20">
               <p onClick={() => clicked()}>{food.name}</p>
               <a href={`/food/edit/${food.name}`}>Edit</a>
               <a href={`/food/${food.name}`}>+</a>
