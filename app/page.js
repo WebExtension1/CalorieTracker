@@ -10,8 +10,12 @@ export default function Home() {
   const [user, loading] = useAuthState(auth);
   const router = useRouter();
   const [foodData, setFoodData] = useState([]);
+  const [todaysCalories, setTodaysCalories] = useState([]);
+  const [yesterdaysCalories, setYesterdaysCalories] = useState([]);
   const [filterType, setFilterType] = useState(1);
   const filteredData = foodData.filter((food) => food.typeID === filterType);
+  const yesterdayRemaining = process.env.NEXT_PUBLIC_CALORIE_LIMIT - yesterdaysCalories[0]?.total_calories || 0;
+  const todaysLimit = parseInt(process.env.NEXT_PUBLIC_CALORIE_LIMIT) + parseInt(yesterdayRemaining); 
 
   useEffect(() => {
     if (loading) return;
@@ -31,6 +35,32 @@ export default function Home() {
       }
     };
     fetchFoodData();
+  }, []);
+
+  useEffect(() => {
+    const fetchTodaysHistory = async () => {
+      try {
+        const res = await fetch("/api/getTodaysHistory");
+        const data = await res.json();
+        setTodaysCalories(data);
+      } catch (error) {
+        console.error("Error fetching history data:", error);
+      }
+    };
+    fetchTodaysHistory();
+  }, []);
+
+  useEffect(() => {
+    const fetchYesterdaysTotal = async () => {
+      try {
+        const res = await fetch("/api/getYesterdaysTotal");
+        const data = await res.json();
+        setYesterdaysCalories(data);
+      } catch (error) {
+        console.error("Error fetching history data:", error);
+      }
+    };
+    fetchYesterdaysTotal();
   }, []);
 
   async function addNew() {
@@ -60,7 +90,30 @@ export default function Home() {
           <button onClick={() => signOut(auth)}>Sign Out</button>
         </div>
         <div id="stats">
-          <p>Here would display the stats</p>
+          <p>You have {yesterdayRemaining} calories left from yesterday</p>
+          <div id="history">
+            <p>Todays Limit is: {todaysLimit}</p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Calories</th>
+                  <th>Quantity</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {todaysCalories.map((history) => (
+                  <tr>
+                    <td>{history.name}</td>
+                    <td>{history.calories}</td>
+                    <td>{history.quantity}</td>
+                    <td>{history.quantity * history.calories}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
         <div className="flex gap-x-7">
           <p
