@@ -35,27 +35,38 @@ export default function Page({ params }) {
     };
 
     return (
-        <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-            <Link href="/">Back to Dashboard</Link>
-            <form onSubmit={onSubmit} method="POST">
-                <p>Name</p>
+        <div className="flex flex-col min-h-screen p-8 pb-20 gap-16 sm:p-20 items-center justify-center font-sans">
+            <Link href="/" className="text-blue-500 hover:underline">Back to Dashboard</Link>
+            <form onSubmit={onSubmit} method="POST" className="flex flex-col gap-6 w-full max-w-md">
+                <label htmlFor="name" className="text-sm sm:text-base font-semibold">
+                    Name
+                </label>
                 <input
                     type="text"
                     name="name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
+                    className="w-full px-4 py-2 border rounded text-gray-300 bg-black focus:ring focus:ring-blue-300"
                     required
                 />
-                <p>Calories</p>
+                <label htmlFor="calories" className="text-sm sm:text-base font-semibold">
+                    Calories
+                </label>
                 <input
                     type="number"
                     name="calories"
                     value={calories}
                     onChange={(e) => setCalories(e.target.value)}
                     min="0"
+                    className="w-full px-4 py-2 border rounded text-gray-300 bg-black focus:ring focus:ring-blue-300"
                     required
                 />
-                <button type="submit">Add</button>
+                <button 
+                    type="submit"
+                    className="mt-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                >
+                    Add
+                </button>
             </form>
         </div>
     );

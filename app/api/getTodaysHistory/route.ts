@@ -13,7 +13,6 @@ export async function GET(request: Request) {
     // Connect to db
     const connection = await mysql.createConnection(connectionParams)
     
-    let date = new Date()
     let query = 'SELECT foods.name, foods.calories, history.quantity FROM foods JOIN history ON foods.foodID = history.foodID WHERE history.eatenDate = CURDATE();'
     let values: any[] = []
 

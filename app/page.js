@@ -11,11 +11,12 @@ export default function Home() {
   const router = useRouter();
   const [foodData, setFoodData] = useState([]);
   const [todaysCalories, setTodaysCalories] = useState([]);
-  const [yesterdaysCalories, setYesterdaysCalories] = useState([]);
   const [filterType, setFilterType] = useState(1);
   const filteredData = foodData.filter((food) => food.typeID === filterType);
-  const yesterdayRemaining = process.env.NEXT_PUBLIC_CALORIE_LIMIT - yesterdaysCalories[0]?.total_calories || 0;
-  const todaysLimit = parseInt(process.env.NEXT_PUBLIC_CALORIE_LIMIT) + parseInt(yesterdayRemaining); 
+  const [yesterdayRemaining, setYesterdayRemaining] = useState();
+  const [todaysLimit, setTodaysLimit] = useState();
+  const [todaysAmount, setTodaysAmount] = useState();
+  const [message, setMessage] = useState();
 
   useEffect(() => {
     if (loading) return;
@@ -38,29 +39,41 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const fetchTodaysHistory = async () => {
+    const fetchAllData = async () => {
       try {
-        const res = await fetch("/api/getTodaysHistory");
-        const data = await res.json();
-        setTodaysCalories(data);
-      } catch (error) {
-        console.error("Error fetching history data:", error);
-      }
-    };
-    fetchTodaysHistory();
-  }, []);
+        const yesterdayRes = await fetch("/api/getYesterdaysTotal");
+        const yesterdayData = await yesterdayRes.json();
 
-  useEffect(() => {
-    const fetchYesterdaysTotal = async () => {
-      try {
-        const res = await fetch("/api/getYesterdaysTotal");
-        const data = await res.json();
-        setYesterdaysCalories(data);
+        const yesterdayCalories = yesterdayData[0]?.total_calories || 0;
+        const remainingCalories = parseInt(process.env.NEXT_PUBLIC_CALORIE_LIMIT) - yesterdayCalories;
+        setYesterdayRemaining(remainingCalories);
+
+        const limit = parseInt(process.env.NEXT_PUBLIC_CALORIE_LIMIT) + remainingCalories;
+        setTodaysLimit(limit);
+
+        const todayRes = await fetch("/api/getTodaysHistory");
+        const todayData = await todayRes.json();
+        setTodaysCalories(todayData);
+
+        let totalCalories = todayData.reduce(
+          (acc, item) => acc + parseInt(item.calories) * parseInt(item.quantity),
+          0
+        );
+        setTodaysAmount(totalCalories);
+
+        let newMessage = "You have reached your limit for the day";
+        if (totalCalories < limit) newMessage = `You have ${limit - totalCalories} calories left today`;
+        else if (totalCalories > limit) newMessage = `You have gone ${totalCalories - limit} calories over your limit today`;
+        setMessage(newMessage);
+
+        const foodRes = await fetch("/api/getFood");
+        const food = await foodRes.json();
+        setFoodData(food);
       } catch (error) {
-        console.error("Error fetching history data:", error);
+        console.error("Error fetching data:", error);
       }
     };
-    fetchYesterdaysTotal();
+    fetchAllData();
   }, []);
 
   async function addNew() {
@@ -75,47 +88,58 @@ export default function Home() {
 
   if (user?.email != process.env.NEXT_PUBLIC_WHITELISTED_EMAIL) {
     return (
-      <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+      <div className="flex flex-col min-h-screen p-4 gap-8 sm:p-8 sm:gap-16 font-sans">
         <div>
-          <button onClick={() => signOut(auth)}>Sign Out</button>
+          <button
+            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+            onClick={() => signOut(auth)}
+          >
+          Sign Out
+          </button>
         </div>
-        <p>You don't have permissions to access these resouces</p>
+        <div className="text-center">
+          <p className="text-sm sm:text-base">You don't have permissions to access these resouces</p>
+        </div>
       </div>
     );
   }
   else {
     return (
-      <div className="grid grid-rows-[20px_1fr_20px] justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+      <div className="flex flex-col min-h-screen p-4 gap-8 sm:p-8 sm:gap-16 font-sans">
         <div>
-          <button onClick={() => signOut(auth)}>Sign Out</button>
+          <button
+            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+            onClick={() => signOut(auth)}
+          >
+          Sign Out
+          </button>
         </div>
-        <div id="stats">
-          <p>You have {yesterdayRemaining} calories left from yesterday</p>
-          <div id="history">
-            <p>Todays Limit is: {todaysLimit}</p>
-            <table>
-              <thead>
+        <div id="stats" className="text-center">
+          <p className="text-sm sm:text-base">You have {yesterdayRemaining} calories carried over from yesterday</p>
+          <p className="text-sm sm:text-base">Today you have used {todaysAmount} of {todaysLimit} calories</p>
+          <p className="text-sm sm:text-base font-semibold">{message}</p>
+          <table id="history" className="table-auto w-full border-collapse mt-4 text-sm sm:text-base">
+            <thead>
+              <tr>
+                <th className="border-b px-4 py-2">Name</th>
+                <th className="border-b px-4 py-2">Calories</th>
+                <th className="border-b px-4 py-2">Quantity</th>
+                <th className="border-b px-4 py-2">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {todaysCalories.map((history) => (
                 <tr>
-                  <th>Name</th>
-                  <th>Calories</th>
-                  <th>Quantity</th>
-                  <th>Total</th>
+                  <td className="border-b px-4 py-2">{history.name}</td>
+                  <td className="border-b px-4 py-2">{history.calories}</td>
+                  <td className="border-b px-4 py-2">{history.quantity}</td>
+                  <td className="border-b px-4 py-2">{history.quantity * history.calories}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {todaysCalories.map((history) => (
-                  <tr>
-                    <td>{history.name}</td>
-                    <td>{history.calories}</td>
-                    <td>{history.quantity}</td>
-                    <td>{history.quantity * history.calories}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </table>
         </div>
-        <div className="flex gap-x-7">
+        <div className="flex flex-col sm:flex-row gap-4 sm:gap-7">
           <p
             id="food"
             className={`${filterType === 1 ? "font-bold underline" : ""}`}
@@ -131,13 +155,36 @@ export default function Home() {
             Condiments
           </p>
         </div>
-        <button onClick={() => addNew()}>Add New</button>
-        <div id="items">
+
+        <div className="text-center">
+          <button
+            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+            onClick={() => addNew()}
+          >
+            Add New
+          </button>
+        </div>
+
+        <div id="items" className="flex flex-col gap-6">
           {filteredData.map((food) => (
-            <div key={food.name} className="item flex gap-x-20">
-              <p onClick={() => clicked()}>{food.name}</p>
-              <a href={`/food/edit/${food.name}`}>Edit</a>
-              {filterType === 1 ? <a href={`/food/${food.name}`}>+</a> : ""}
+            <div key={food.name} className="flex items-center justify-between">
+              <p onClick={() => clicked()} className="text-lg">{food.name}</p>
+              <div className="flex items-center gap-10">
+                <a
+                  href={`/food/edit/${food.name}`}
+                  className="text-blue-500 hover:underline"
+                >
+                  Edit
+                </a>
+                {filterType === 1 && (
+                  <a
+                    href={`/food/${food.name}`}
+                    className="text-green-500 hover:underline"
+                  >
+                    +
+                  </a>
+                )}
+              </div>
             </div>
           ))}
         </div>

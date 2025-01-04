@@ -13,10 +13,8 @@ export async function GET(request: Request) {
     // Connect to db
     const connection = await mysql.createConnection(connectionParams)
     
-    let date = new Date()
-    date.setDate(date.getDate() - 1)
     let query = 'SELECT SUM(foods.calories * history.quantity) AS total_calories FROM foods JOIN history ON foods.foodID = history.foodID WHERE history.eatenDate = DATE_SUB(CURDATE(), INTERVAL 1 DAY);'
-    let values = [date.getDate()]
+    let values: any[] = []
 
     // Execute and get results
     const [results] = await connection.execute(query, values)
