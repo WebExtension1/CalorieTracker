@@ -34,7 +34,8 @@ export default function Page({ params }) {
                 // alert('Calories updated successfully');
             }
         } catch (err) {
-            alert('An error occurred. Please try again later.\n' . err);
+            console.error('Error details:', err);
+            alert('An error occurred. Please try again later.');
         }
     }
 
@@ -51,7 +52,8 @@ export default function Page({ params }) {
                 router.push("/");
             }
         } catch (err) {
-            alert('An error occurred. Please try again later.\n' . err);
+            console.error('Error details:', err);
+            alert('An error occurred. Please try again later.');
         }
     }
 
