@@ -21,7 +21,7 @@ export async function POST(request: Request) {
     const values1 = [name.replace("%20", " ")];
 
     // Execute the query and assert the type
-    const [results1, _fields1]: [RowDataPacket[], FieldPacket[]] = await connection.execute(query1, values1);
+    const [results1]: [RowDataPacket[], FieldPacket[]] = await connection.execute(query1, values1);
 
     // Check if results are empty
     if (results1.length === 0) {
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
     const values2 = [foodID, quantity];
 
     // Execute the insertion
-    const [results2, _fields2]: [OkPacket, FieldPacket[]] = await connection.execute(query2, values2);
+    const [results2]: [OkPacket, FieldPacket[]] = await connection.execute(query2, values2);
 
 
     // Close db connection
