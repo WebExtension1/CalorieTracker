@@ -5,7 +5,7 @@ import { GetDBSettings } from '@/sharedCode/common'
 // Get the connection parameters
 const connectionParams = GetDBSettings()
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
     // Connect to db
     const connection = await mysql.createConnection(connectionParams)
