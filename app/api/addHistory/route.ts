@@ -1,9 +1,9 @@
-import { NextResponse, NextRequest } from 'next/server'
+import { NextResponse } from 'next/server'
 import mysql from 'mysql2/promise'
-import { GetDBSettings, IDBSettings } from '@/sharedCode/common'
+import { GetDBSettings } from '@/sharedCode/common'
 
 // Get the connection parameters
-let connectionParams = GetDBSettings()
+const connectionParams = GetDBSettings()
 
 export async function POST(request: Request) {
   try {
@@ -21,7 +21,7 @@ export async function POST(request: Request) {
     let values = [name.replace("%20", " ")];
 
     // Execute and get results
-    let [results]: [Array<{ foodID: number }>, any] = await connection.execute(query, values);
+    let [results]: [Array<{ foodID: number }>, (string | number | null)] = await connection.execute(query, values);
 
     query = 'INSERT INTO history (foodID, quantity) VALUES (?, ?)';
     values = [results[0].foodID, quantity];

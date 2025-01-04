@@ -1,9 +1,9 @@
-import { NextResponse, NextRequest } from 'next/server'
+import { NextResponse } from 'next/server'
 import mysql from 'mysql2/promise'
-import { GetDBSettings, IDBSettings } from '@/sharedCode/common'
+import { GetDBSettings } from '@/sharedCode/common'
 
 // Get the connection parameters
-let connectionParams = GetDBSettings()
+const connectionParams = GetDBSettings()
 
 export async function GET(request: Request) {
   try {
@@ -14,7 +14,7 @@ export async function GET(request: Request) {
     const connection = await mysql.createConnection(connectionParams)
 
     let query = 'SELECT * FROM foods'
-    let values: any[] = []
+    const values: (string | number | null)[] = []
 
     if (typeID) {
       query += ' WHERE typeID = ?'

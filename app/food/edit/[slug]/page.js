@@ -30,13 +30,11 @@ export default function Page({ params }) {
                 body: JSON.stringify({ calories, name: slug }),
             });
 
-            const data = await response.json();
-
             if (response.ok) {
                 // alert('Calories updated successfully');
             }
         } catch (err) {
-            alert('An error occurred. Please try again later.');
+            alert('An error occurred. Please try again later.\n' . err);
         }
     }
 
@@ -48,14 +46,12 @@ export default function Page({ params }) {
                 body: JSON.stringify({ name: slug }),
             });
 
-            const data = await response.json();
-
             if (response.ok) {
                 // alert('Item successfully removed');
                 router.push("/");
             }
         } catch (err) {
-            alert('An error occurred. Please try again later.');
+            alert('An error occurred. Please try again later.\n' . err);
         }
     }
 
