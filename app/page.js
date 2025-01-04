@@ -128,8 +128,8 @@ export default function Home() {
               </tr>
             </thead>
             <tbody>
-              {todaysCalories.map((history) => (
-                <tr>
+              {todaysCalories.map((history, index) => (
+                <tr key={`${history}-${index}`}>
                   <td className="border-b px-4 py-2">{history.name}</td>
                   <td className="border-b px-4 py-2">{history.calories}</td>
                   <td className="border-b px-4 py-2">{history.quantity}</td>
