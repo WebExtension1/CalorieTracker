@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import mysql from 'mysql2/promise'
+import mysql, { RowDataPacket, OkPacket, FieldPacket } from 'mysql2/promise'
 import { GetDBSettings } from '@/sharedCode/common'
 
 // Get the connection parameters
@@ -17,23 +17,32 @@ export async function POST(request: Request) {
     // Connect to db
     const connection = await mysql.createConnection(connectionParams)
 
-    let query = 'SELECT foodID FROM foods WHERE name = ?'
-    let values = [name.replace("%20", " ")];
+    const query1 = 'SELECT foodID FROM foods WHERE name = ?';
+    const values1 = [name.replace("%20", " ")];
 
-    // Execute and get results
-    let [results]: [Array<{ foodID: number }>, (string | number | null)] = await connection.execute(query, values);
+    // Execute the query and assert the type
+    const [results1, _fields1]: [RowDataPacket[], FieldPacket[]] = await connection.execute(query1, values1);
 
-    query = 'INSERT INTO history (foodID, quantity) VALUES (?, ?)';
-    values = [results[0].foodID, quantity];
+    // Check if results are empty
+    if (results1.length === 0) {
+        throw new Error('No food found with the given name.');
+    }
 
-    // Execute and get results
-    [results] = await connection.execute(query, values)
+    const foodID = results1[0].foodID;
+
+    // Step 2: Insert into history
+    const query2 = 'INSERT INTO history (foodID, quantity) VALUES (?, ?)';
+    const values2 = [foodID, quantity];
+
+    // Execute the insertion
+    const [results2, _fields2]: [OkPacket, FieldPacket[]] = await connection.execute(query2, values2);
+
 
     // Close db connection
     connection.end()
 
     // return the results as a JSON API response
-    return NextResponse.json(results)
+    return NextResponse.json(results2)
   } catch (err) {
     console.log('ERROR: API - ', (err as Error).message)
 
