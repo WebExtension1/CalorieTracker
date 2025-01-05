@@ -52,6 +52,7 @@ jobs:
         run: |
           npm ci
           npm run build
+          next start
 
 # Please do not touch the following action
       - name: Store deployment content
