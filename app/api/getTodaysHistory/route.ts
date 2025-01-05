@@ -1,20 +1,17 @@
-import { NextResponse, NextRequest } from 'next/server'
+import { NextResponse } from 'next/server'
 import mysql from 'mysql2/promise'
-import { GetDBSettings, IDBSettings } from '@/sharedCode/common'
+import { GetDBSettings } from '@/sharedCode/common'
 
 // Get the connection parameters
-let connectionParams = GetDBSettings()
+const connectionParams = GetDBSettings()
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
-    const url = new URL(request.url);
-    const typeID = url.searchParams.get("typeID");
-    
     // Connect to db
     const connection = await mysql.createConnection(connectionParams)
     
-    let query = 'SELECT foods.name, foods.calories, history.quantity FROM foods JOIN history ON foods.foodID = history.foodID WHERE history.eatenDate = CURDATE();'
-    let values: any[] = []
+    const query = 'SELECT foods.name, foods.calories, history.quantity FROM foods JOIN history ON foods.foodID = history.foodID WHERE history.eatenDate = CURDATE();'
+    const values: (string | number | null)[] = []
 
     // Execute and get results
     const [results] = await connection.execute(query, values)

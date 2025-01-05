@@ -110,6 +110,8 @@ export default function Page({ params }) {
     }
   }
 
+  if (loading) return <div>Loading Resources...</div>
+
   return (
     <div className="flex flex-col min-h-screen p-4 gap-8 sm:p-8 sm:gap-16 font-sans">
       <Link 

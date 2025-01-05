@@ -30,12 +30,11 @@ export default function Page({ params }) {
                 body: JSON.stringify({ calories, name: slug }),
             });
 
-            const data = await response.json();
-
             if (response.ok) {
                 // alert('Calories updated successfully');
             }
         } catch (err) {
+            console.error('Error details:', err);
             alert('An error occurred. Please try again later.');
         }
     }
@@ -48,16 +47,17 @@ export default function Page({ params }) {
                 body: JSON.stringify({ name: slug }),
             });
 
-            const data = await response.json();
-
             if (response.ok) {
                 // alert('Item successfully removed');
                 router.push("/");
             }
         } catch (err) {
+            console.error('Error details:', err);
             alert('An error occurred. Please try again later.');
         }
     }
+
+    if (loading) return <div>Loading Resources...</div>
 
     return(
         <div className="flex flex-col min-h-screen p-4 gap-8 sm:p-8 sm:gap-16 font-sans">

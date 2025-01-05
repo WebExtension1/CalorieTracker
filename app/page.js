@@ -98,7 +98,7 @@ export default function Home() {
           </button>
         </div>
         <div className="text-center">
-          <p className="text-sm sm:text-base">You don't have permissions to access these resouces</p>
+          <p className="text-sm sm:text-base">You don&apos;t have permissions to access these resouces</p>
         </div>
       </div>
     );

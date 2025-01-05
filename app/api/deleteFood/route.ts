@@ -1,9 +1,9 @@
-import { NextResponse, NextRequest } from 'next/server'
+import { NextResponse } from 'next/server'
 import mysql from 'mysql2/promise'
-import { GetDBSettings, IDBSettings } from '@/sharedCode/common'
+import { GetDBSettings } from '@/sharedCode/common'
 
 // Get the connection parameters
-let connectionParams = GetDBSettings()
+const connectionParams = GetDBSettings()
 
 export async function POST(request: Request) {
   try {
@@ -16,8 +16,8 @@ export async function POST(request: Request) {
     // Connect to db
     const connection = await mysql.createConnection(connectionParams)
 
-    let query = 'DELETE FROM foods WHERE name = ?'
-    let values = [name.replace("%20", " ")];
+    const query = 'DELETE FROM foods WHERE name = ?'
+    const values = [name.replace("%20", " ")];
 
     // Execute and get results
     const [results] = await connection.execute(query, values)
