@@ -23,6 +23,11 @@ env:
   NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
   NEXT_PUBLIC_WHITELISTED_EMAIL: ${{ secrets.NEXT_PUBLIC_WHITELISTED_EMAIL }}
   NEXT_PUBLIC_CALORIE_LIMIT: ${{ secrets.NEXT_PUBLIC_CALORIE_LIMIT }}
+  DB_HOST: ${{ secrets.DB_HOST }}
+  DB_PORT: 3306
+  DB_USERNAME: ${{ secrets.DB_USERNAME }}
+  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+  DB_DATABASE: ${{ secrets.DB_DATABASE }}
 
 jobs:
 # Please do not rename this job
