@@ -49,6 +49,7 @@ jobs:
         run: |
           npm ci
           npm run build
+          npm start
 
       - name: List node_modules/.bin directory
         run: ls -l node_modules/.bin
