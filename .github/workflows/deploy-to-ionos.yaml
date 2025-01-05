@@ -112,10 +112,6 @@ jobs:
           action: update-status
           status: ${{ job.status }}
 
-      - name: Start the app
-        run: |
-          npm start
-
   notify-deployment-finished:
     needs: deploy-to-ionos
     if: ${{ github.event_name == 'workflow_dispatch' && always() }}
