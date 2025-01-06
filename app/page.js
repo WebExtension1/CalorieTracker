@@ -131,15 +131,21 @@ export default function Home() {
               </tr>
             </thead>
             <tbody>
-              {todaysCalories.map((history, index) => (
+            {Array.isArray(todaysCalories) && todaysCalories.length > 0 ? (
+              todaysCalories.map((history, index) => (
                 <tr key={`${history}-${index}`}>
                   <td className="border-b px-4 py-2">{history.name}</td>
                   <td className="border-b px-4 py-2">{history.calories}</td>
                   <td className="border-b px-4 py-2">{history.quantity}</td>
                   <td className="border-b px-4 py-2">{history.quantity * history.calories}</td>
                 </tr>
-              ))}
-            </tbody>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={4} className="border-b px-4 py-2 text-center">No data available</td>
+              </tr>
+            )}
+          </tbody>
           </table>
         </div>
         <div className="flex flex-col sm:flex-row gap-4 sm:gap-7">
@@ -169,7 +175,8 @@ export default function Home() {
         </div>
 
         <div id="items" className="flex flex-col gap-6">
-          {filteredData.map((food) => (
+        {Array.isArray(filteredData) && filteredData.length > 0 ? (
+          filteredData.map((food) => (
             <div key={food.name} className="flex items-center justify-between">
               <p onClick={() => clicked()} className="text-lg">{food.name}</p>
               <div className="flex items-center gap-10">
@@ -189,8 +196,11 @@ export default function Home() {
                 )}
               </div>
             </div>
-          ))}
-        </div>
+          ))
+        ) : (
+          <div className="text-center">No items available</div>
+        )}
+      </div>
       </div>
     );
   }
