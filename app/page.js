@@ -30,8 +30,15 @@ export default function Home() {
       try {
         const res = await fetch("/api/getFood");
         const data = await res.json();
-        console.log("/getFood:", data.recordsets[0]);
-        setFoodData(data.recordsets[0]);
+        console.log("/getFood:", data);
+        
+        if (data && data.recordsets && data.recordsets[0]) {
+          console.log("/getFood:", data.recordsets[0]);
+          setFoodData(data.recordsets[0]);
+        } else {
+          console.error("Invalid response structure:", data);
+        }
+
       } catch (error) {
         console.error("Error fetching food data:", error);
       }
@@ -44,35 +51,52 @@ export default function Home() {
       try {
         const yesterdayRes = await fetch("/api/getYesterdaysTotal");
         const yesterdayData = await yesterdayRes.json();
-        console.log("/getYesterdaysTotal:", yesterdayData.recordsets[0]);
+        console.log("/getYesterdaysTotal:", yesterdayData);
 
-        const yesterdayCalories = yesterdayData.recordsets[0][0]?.total_calories || 0;
-        const remainingCalories = parseInt(process.env.NEXT_PUBLIC_CALORIE_LIMIT) - yesterdayCalories;
-        setYesterdayRemaining(remainingCalories);
-
-        const limit = parseInt(process.env.NEXT_PUBLIC_CALORIE_LIMIT) + remainingCalories;
-        setTodaysLimit(limit);
-
-        const todayRes = await fetch("/api/getTodaysHistory");
-        const todayData = await todayRes.json();
-        console.log("/getTodaysHistory:", yesterdayData.recordsets[0]);
-        setTodaysCalories(todayData.recordsets[0]);
-
-        let totalCalories = Array.isArray(todayData) ? todayData.reduce(
-          (acc, item) => acc + parseInt(item.calories) * parseInt(item.quantity),
-          0
-        ): 0;
-        setTodaysAmount(totalCalories);
-
-        let newMessage = "You have reached your limit for the day";
-        if (totalCalories < limit) newMessage = `You have ${limit - totalCalories} calories left today`;
-        else if (totalCalories > limit) newMessage = `You have gone ${totalCalories - limit} calories over your limit today`;
-        setMessage(newMessage);
-
-        const foodRes = await fetch("/api/getFood");
-        const food = await foodRes.json();
-        console.log("/getFood:", food.recordsets[0]);
-        setFoodData(food.recordsets[0]);
+        if (yesterdayData && yesterdayData.recordsets && yesterdayData.recordsets[0]) {
+          console.log("/getYesterdaysTotal:", yesterdayData.recordsets[0]);
+          const yesterdayCalories = yesterdayData.recordsets[0][0]?.total_calories || 0;
+          const remainingCalories = parseInt(process.env.NEXT_PUBLIC_CALORIE_LIMIT) - yesterdayCalories;
+          setYesterdayRemaining(remainingCalories);
+  
+          const limit = parseInt(process.env.NEXT_PUBLIC_CALORIE_LIMIT) + remainingCalories;
+          setTodaysLimit(limit);
+  
+          const todayRes = await fetch("/api/getTodaysHistory");
+          const todayData = await todayRes.json();
+          console.log("/getTodaysHistory:", todayData);
+  
+          if (todayData && todayData.recordsets && todayData.recordsets[0]) {
+            console.log("/getTodaysHistory:", todayData.recordsets[0]);
+            setTodaysCalories(todayData.recordsets[0]);
+          } else {
+            console.error("Invalid response structure:", todayData);
+          }
+  
+          let totalCalories = Array.isArray(todayData) ? todayData.reduce(
+            (acc, item) => acc + parseInt(item.calories) * parseInt(item.quantity),
+            0
+          ): 0;
+          setTodaysAmount(totalCalories);
+  
+          let newMessage = "You have reached your limit for the day";
+          if (totalCalories < limit) newMessage = `You have ${limit - totalCalories} calories left today`;
+          else if (totalCalories > limit) newMessage = `You have gone ${totalCalories - limit} calories over your limit today`;
+          setMessage(newMessage);
+  
+          const foodRes = await fetch("/api/getFood");
+          const food = await foodRes.json();
+          console.log("/getFood:", food);
+  
+          if (food && food.recordsets && food.recordsets[0]) {
+            console.log("/getFood:", food.recordsets[0]);
+            setFoodData(food.recordsets[0]);
+          } else {
+            console.error("Invalid response structure:", food);
+          }
+        } else {
+          console.error("Invalid response structure:", yesterdayData);
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
       }
