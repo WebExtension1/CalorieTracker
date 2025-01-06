@@ -20,6 +20,28 @@ export default function Page({ params }) {
     }
     }, [user, router]);
 
+    useEffect(() => {
+        const fetchFoodData = async () => {
+          try {
+            const res = await fetch("/api/getFood");
+            const data = await res.json();
+            console.log("/getFood:", data);
+            
+            if (data && data.recordsets && data.recordsets[0]) {
+                console.log("/getFood:", data.recordsets[0]);
+                const food = data.recordsets[0].find(item => item.name === slug.replace("%20", " "));
+                setCalories(food ? food.calories : 0);
+            } else {
+              console.error("Invalid response structure:", data);
+            }
+    
+          } catch (error) {
+            console.error("Error fetching food data:", error);
+          }
+        };
+        fetchFoodData();
+      }, []);
+
     if (loading) return <div>Loading Resources...</div>
 
     async function handleUpdate() {
@@ -30,12 +52,14 @@ export default function Page({ params }) {
                 body: JSON.stringify({ calories, name: slug }),
             });
 
-            if (response.ok) {
-                // alert('Calories updated successfully');
+            if (!response.ok) {
+                throw new Error('Failed to update food');
             }
+
+            router.push("/");
         } catch (err) {
             console.error('Error details:', err);
-            alert('An error occurred. Please try again later.');
+            router.push("/");
         }
     }
 
@@ -47,19 +71,20 @@ export default function Page({ params }) {
                 body: JSON.stringify({ name: slug }),
             });
 
-            if (response.ok) {
-                // alert('Item successfully removed');
-                router.push("/");
+            if (!response.ok) {
+                throw new Error('Failed to update food');
             }
+
+            router.push("/");
         } catch (err) {
             console.error('Error details:', err);
-            alert('An error occurred. Please try again later.');
+            router.push("/");
         }
     }
 
     if (loading) return <div>Loading Resources...</div>
 
-    return(
+    return (
         <div className="flex flex-col min-h-screen p-4 gap-8 sm:p-8 sm:gap-16 font-sans">
             <Link 
                 href="/" 

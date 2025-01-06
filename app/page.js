@@ -73,7 +73,7 @@ export default function Home() {
             console.error("Invalid response structure:", todayData);
           }
   
-          let totalCalories = Array.isArray(todayData) ? todayData.reduce(
+          let totalCalories = Array.isArray(todayData.recordsets[0]) ? todayData.recordsets[0].reduce(
             (acc, item) => acc + parseInt(item.calories) * parseInt(item.quantity),
             0
           ): 0;
