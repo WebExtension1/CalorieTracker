@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server'
-import mysql from 'mysql2/promise'
+import sql from 'mssql'
 import { GetDBSettings } from '@/sharedCode/common'
 
-// Get the connection parameters
-const connectionParams = GetDBSettings()
+const connectionParams = GetDBSettings().connectionParams;
 
 export async function GET(request: Request) {
   try {
@@ -11,21 +10,23 @@ export async function GET(request: Request) {
     const typeID = url.searchParams.get("typeID");
     
     // Connect to db
-    const connection = await mysql.createConnection(connectionParams)
+    const connection = await sql.connect(connectionParams)
 
     let query = 'SELECT * FROM foods'
     const values: (string | number | null)[] = []
 
     if (typeID) {
-      query += ' WHERE typeID = ?'
-      values.push(Number(typeID)); // Ensure it's a number
+      query += ' WHERE typeID = @typeID'
+      values.push(Number(typeID));
     }
 
-    // Execute and get results
-    const [results] = await connection.execute(query, values)
+    const requestQuery = connection.request();
 
-    // Close db connection
-    connection.end()
+    if (values.length > 0) {
+      requestQuery.input('typeID', sql.Int, values[0]);
+    }
+
+    const results = await requestQuery.query(query);
 
     // return the results as a JSON API response
     return NextResponse.json(results)

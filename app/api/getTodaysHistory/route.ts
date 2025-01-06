@@ -1,23 +1,19 @@
 import { NextResponse } from 'next/server'
-import mysql from 'mysql2/promise'
+import sql from 'mssql'
 import { GetDBSettings } from '@/sharedCode/common'
 
 // Get the connection parameters
-const connectionParams = GetDBSettings()
+const connectionParams = GetDBSettings().connectionParams;
 
 export async function GET() {
   try {
     // Connect to db
-    const connection = await mysql.createConnection(connectionParams)
+    const connection = await sql.connect(connectionParams)
     
-    const query = 'SELECT foods.name, foods.calories, history.quantity FROM foods JOIN history ON foods.foodID = history.foodID WHERE history.eatenDate = CURDATE();'
-    const values: (string | number | null)[] = []
+    const query = 'SELECT foods.name, foods.calories, history.quantity FROM foods JOIN history ON foods.foodID = history.foodID WHERE CONVERT(date, history.eatenDate) = CONVERT(date, GETDATE());'
 
-    // Execute and get results
-    const [results] = await connection.execute(query, values)
-
-    // Close db connection
-    connection.end()
+    const results = await connection.request()
+      .query(query);
 
     // return the results as a JSON API response
     return NextResponse.json(results)

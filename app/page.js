@@ -30,8 +30,8 @@ export default function Home() {
       try {
         const res = await fetch("/api/getFood");
         const data = await res.json();
-        console.log("Fetched food data:", data);
-        setFoodData(data);
+        console.log("/getFood:", data.recordsets[0]);
+        setFoodData(data.recordsets[0]);
       } catch (error) {
         console.error("Error fetching food data:", error);
       }
@@ -44,9 +44,9 @@ export default function Home() {
       try {
         const yesterdayRes = await fetch("/api/getYesterdaysTotal");
         const yesterdayData = await yesterdayRes.json();
-        console.log("Yesterday's data:", yesterdayData);
+        console.log("/getYesterdaysTotal:", yesterdayData.recordsets[0]);
 
-        const yesterdayCalories = yesterdayData[0]?.total_calories || 0;
+        const yesterdayCalories = yesterdayData.recordsets[0][0]?.total_calories || 0;
         const remainingCalories = parseInt(process.env.NEXT_PUBLIC_CALORIE_LIMIT) - yesterdayCalories;
         setYesterdayRemaining(remainingCalories);
 
@@ -55,8 +55,8 @@ export default function Home() {
 
         const todayRes = await fetch("/api/getTodaysHistory");
         const todayData = await todayRes.json();
-        console.log("Today's data:", yesterdayData);
-        setTodaysCalories(todayData);
+        console.log("/getTodaysHistory:", yesterdayData.recordsets[0]);
+        setTodaysCalories(todayData.recordsets[0]);
 
         let totalCalories = Array.isArray(todayData) ? todayData.reduce(
           (acc, item) => acc + parseInt(item.calories) * parseInt(item.quantity),
@@ -71,7 +71,8 @@ export default function Home() {
 
         const foodRes = await fetch("/api/getFood");
         const food = await foodRes.json();
-        setFoodData(food);
+        console.log("/getFood:", food.recordsets[0]);
+        setFoodData(food.recordsets[0]);
       } catch (error) {
         console.error("Error fetching data:", error);
       }

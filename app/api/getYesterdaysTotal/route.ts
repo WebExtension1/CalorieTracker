@@ -1,23 +1,20 @@
 import { NextResponse } from 'next/server'
-import mysql from 'mysql2/promise'
+import sql from 'mssql'
 import { GetDBSettings } from '@/sharedCode/common'
 
 // Get the connection parameters
-const connectionParams = GetDBSettings()
+const connectionParams = GetDBSettings().connectionParams;
 
 export async function GET() {
   try {
     // Connect to db
-    const connection = await mysql.createConnection(connectionParams)
+    const connection = await sql.connect(connectionParams)
     
-    const query = 'SELECT SUM(foods.calories * history.quantity) AS total_calories FROM foods JOIN history ON foods.foodID = history.foodID WHERE history.eatenDate = DATE_SUB(CURDATE(), INTERVAL 1 DAY);'
-    const values: (string | number | null)[] = []
+    const query = 'SELECT SUM(foods.calories * history.quantity) AS total_calories FROM foods JOIN history ON foods.foodID = history.foodID WHERE history.eatenDate = CAST(DATEADD(DAY, -1, GETDATE()) AS DATE);'
 
     // Execute and get results
-    const [results] = await connection.execute(query, values)
-
-    // Close db connection
-    connection.end()
+    const results = await connection.request()
+      .query(query);
 
     // return the results as a JSON API response
     return NextResponse.json(results)

@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server'
-import mysql, { RowDataPacket, OkPacket, FieldPacket } from 'mysql2/promise'
+import sql from 'mssql'
 import { GetDBSettings } from '@/sharedCode/common'
 
 // Get the connection parameters
-const connectionParams = GetDBSettings()
+const connectionParams = GetDBSettings().connectionParams;
 
 export async function POST(request: Request) {
   try {
@@ -15,31 +15,30 @@ export async function POST(request: Request) {
     }
 
     // Connect to db
-    const connection = await mysql.createConnection(connectionParams)
+    const connection = await sql.connect(connectionParams)
 
-    const query1 = 'SELECT foodID FROM foods WHERE name = ?';
-    const values1 = [name.replace("%20", " ")];
+    const query1 = 'SELECT foodID FROM foods WHERE name = @name';
+    
+    const request1 = connection.request();
+    request1.input('name', sql.NVarChar, name.replace("%20", " "));
 
-    // Execute the query and assert the type
-    const [results1]: [RowDataPacket[], FieldPacket[]] = await connection.execute(query1, values1);
+    const results1 = await request1.query(query1);
 
     // Check if results are empty
-    if (results1.length === 0) {
+    if (results1.recordset.length === 0) {
         throw new Error('No food found with the given name.');
     }
 
-    const foodID = results1[0].foodID;
+    const foodID = results1.recordset[0].foodID;
 
     // Step 2: Insert into history
-    const query2 = 'INSERT INTO history (foodID, quantity) VALUES (?, ?)';
-    const values2 = [foodID, quantity];
+    const query2 = 'INSERT INTO history (foodID, quantity) VALUES (@foodID, @quantity)';
+    
+    const request2 = connection.request();
+    request2.input('foodID', sql.Int, foodID);
+    request2.input('quantity', sql.Int, quantity);
 
-    // Execute the insertion
-    const [results2]: [OkPacket, FieldPacket[]] = await connection.execute(query2, values2);
-
-
-    // Close db connection
-    connection.end()
+    const results2 = await request2.query(query2);
 
     // return the results as a JSON API response
     return NextResponse.json(results2)
