@@ -12,7 +12,7 @@ export default function Home() {
   const [foodData, setFoodData] = useState([]);
   const [todaysCalories, setTodaysCalories] = useState([]);
   const [filterType, setFilterType] = useState(1);
-  const filteredData = foodData.filter((food) => food.typeID === filterType);
+  const filteredData = Array.isArray(foodData) ? foodData.filter((food) => food.typeID === filterType) : [];
   const [yesterdayRemaining, setYesterdayRemaining] = useState();
   const [todaysLimit, setTodaysLimit] = useState();
   const [todaysAmount, setTodaysAmount] = useState();
@@ -30,6 +30,7 @@ export default function Home() {
       try {
         const res = await fetch("/api/getFood");
         const data = await res.json();
+        console.log("Fetched food data:", data);
         setFoodData(data);
       } catch (error) {
         console.error("Error fetching food data:", error);
@@ -43,6 +44,7 @@ export default function Home() {
       try {
         const yesterdayRes = await fetch("/api/getYesterdaysTotal");
         const yesterdayData = await yesterdayRes.json();
+        console.log("Yesterday's data:", yesterdayData);
 
         const yesterdayCalories = yesterdayData[0]?.total_calories || 0;
         const remainingCalories = parseInt(process.env.NEXT_PUBLIC_CALORIE_LIMIT) - yesterdayCalories;
@@ -53,12 +55,13 @@ export default function Home() {
 
         const todayRes = await fetch("/api/getTodaysHistory");
         const todayData = await todayRes.json();
+        console.log("Today's data:", yesterdayData);
         setTodaysCalories(todayData);
 
-        let totalCalories = todayData.reduce(
+        let totalCalories = Array.isArray(todayData) ? todayData.reduce(
           (acc, item) => acc + parseInt(item.calories) * parseInt(item.quantity),
           0
-        );
+        ): 0;
         setTodaysAmount(totalCalories);
 
         let newMessage = "You have reached your limit for the day";
