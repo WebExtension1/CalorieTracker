@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     const connection = await sql.connect(connectionParams)
 
     const query = 'DELETE FROM foods WHERE name = @name'
-    const values = [name.replace("%20", " ")];
+    const values = [name.split('%20').join(' ')];
 
     // Execute and get results
     const results = await connection.request()

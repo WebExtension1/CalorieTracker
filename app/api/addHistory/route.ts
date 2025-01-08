@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     const query1 = 'SELECT foodID FROM foods WHERE name = @name';
     
     const request1 = connection.request();
-    request1.input('name', sql.NVarChar, name.replace("%20", " "));
+    request1.input('name', sql.NVarChar, name.split('%20').join(' '));
 
     const results1 = await request1.query(query1);
 

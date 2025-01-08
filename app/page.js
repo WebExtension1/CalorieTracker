@@ -200,32 +200,44 @@ export default function Home() {
         </div>
 
         <div id="items" className="flex flex-col gap-6">
-        {Array.isArray(filteredData) && filteredData.length > 0 ? (
-          filteredData.map((food) => (
-            <div key={food.name} className="flex items-center justify-between">
-              <p onClick={() => clicked()} className="text-lg">{food.name}</p>
-              <div className="flex items-center gap-10">
-                <a
-                  href={`/food/edit/${food.name}`}
-                  className="text-blue-500 hover:underline"
-                >
-                  Edit
-                </a>
-                {filterType === 1 && (
-                  <a
-                    href={`/food/${food.name}`}
-                    className="text-green-500 hover:underline"
-                  >
-                    +
-                  </a>
-                )}
-              </div>
-            </div>
-          ))
-        ) : (
-          <div className="text-center">No items available</div>
-        )}
-      </div>
+          <table className="table-auto w-full border-collapse mt-4 text-sm sm:text-base text-center">
+            <thead>
+              <tr>
+                <th className="border-b px-4 py-2">Name</th>
+                <th className="border-b px-4 py-2">Calories</th>
+                <th className="border-b px-4 py-2">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Array.isArray(filteredData) && filteredData.length > 0 ? (
+                filteredData.map((food) => (
+                  <tr key={food.name}>
+                    <td onClick={() => clicked()}  className="border-b px-4 py-2">{food.name}</td>
+                    <td className="border-b px-4 py-2">{food.calories}</td>
+                    <td className="border-b px-4 py-2 flex items-center justify-center gap-10">
+                      <a
+                        href={`/food/edit/${food.name}`}
+                        className="text-blue-500 hover:underline"
+                      >
+                        Edit
+                      </a>
+                      {filterType === 1 && (
+                        <a
+                          href={`/food/${food.name}`}
+                          className="text-green-500 hover:underline"
+                        >
+                          +
+                        </a>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <div className="text-center">No items available</div>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     );
   }

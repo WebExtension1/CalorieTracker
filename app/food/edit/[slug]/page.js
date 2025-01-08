@@ -29,7 +29,7 @@ export default function Page({ params }) {
             
             if (data && data.recordsets && data.recordsets[0]) {
                 console.log("/getFood:", data.recordsets[0]);
-                const food = data.recordsets[0].find(item => item.name === slug.replace("%20", " "));
+                const food = data.recordsets[0].find(item => item.name === slug.split('%20').join(' '));
                 setCalories(food ? food.calories : 0);
             } else {
               console.error("Invalid response structure:", data);
@@ -92,7 +92,7 @@ export default function Page({ params }) {
             >
                 Back to Dashboard
             </Link>
-            <h1 className="text-xl font-bold text-center sm:text-2xl">{slug.replace("%20", " ")}</h1>
+            <h1 className="text-xl font-bold text-center sm:text-2xl">{slug.split('%20').join(' ')}</h1>
             <form onSubmit={handleUpdate} className="flex flex-col gap-4 w-full max-w-md mx-auto">
                 <label htmlFor="calories" className="text-sm sm:text-base font-semibold">
                     Calories

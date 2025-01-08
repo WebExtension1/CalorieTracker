@@ -93,7 +93,7 @@ export default function Page({ params }) {
       const response = await fetch('/api/addHistory', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: slug.replace("%20", " "), quantity }),
+          body: JSON.stringify({ name: slug.split('%20').join(' '), quantity }),
       });
 
       const data = await response.json();
@@ -120,7 +120,7 @@ export default function Page({ params }) {
       >
           Back to Dashboard
       </Link>
-      <h1 className="text-xl font-bold text-center sm:text-2xl">{slug.replace("%20", " ")}</h1>
+      <h1 className="text-xl font-bold text-center sm:text-2xl">{slug.split('%20').join(' ')}</h1>
       <form method="POST" className="flex flex-col gap-4 w-full max-w-md mx-auto">
         <label htmlFor="quantity" className="text-sm sm:text-base font-semibold">
             Quantity
