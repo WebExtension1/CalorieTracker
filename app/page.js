@@ -12,7 +12,7 @@ export default function Home() {
   const [foodData, setFoodData] = useState([]);
   const [todaysCalories, setTodaysCalories] = useState([]);
   const [filterType, setFilterType] = useState(1);
-  const filteredData = Array.isArray(foodData) ? foodData.filter((food) => food.typeID === filterType) : [];
+  const [filteredData, setFilteredData] = useState(foodData);
   const [yesterdayRemaining, setYesterdayRemaining] = useState();
   const [todaysLimit, setTodaysLimit] = useState();
   const [todaysAmount, setTodaysAmount] = useState();
@@ -108,6 +108,18 @@ export default function Home() {
     router.push(`/food/new/${filterType}`);
   };
 
+  async function filterData(event) {
+    const query = event?.target?.value?.toLowerCase() || "";
+    const filtered = foodData.filter((food) =>
+      food.name.toLowerCase().includes(query)
+    );
+    setFilteredData(filtered);
+  };
+
+  useEffect(() => {
+    filterData();
+  }, [foodData, filterType]);
+
   if (loading) return <div>Loading Resources...</div>
 
   function clicked() {
@@ -198,8 +210,16 @@ export default function Home() {
             Add New
           </button>
         </div>
+        <div className="flex flex-col gap-2 w-full max-w-md">
+          <p>Search</p>
+          <input
+            type="text"
+            className="w-full px-4 py-2 border rounded text-gray-300 bg-black focus:ring focus:ring-blue-300"
+            onChange={(e) => filterData(e)}
+            />
+        </div>
 
-        <div id="items" className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6">
           <table className="table-auto w-full border-collapse mt-4 text-sm sm:text-base text-center">
             <thead>
               <tr>
@@ -209,10 +229,12 @@ export default function Home() {
               </tr>
             </thead>
             <tbody>
-              {Array.isArray(filteredData) && filteredData.length > 0 ? (
+              {filteredData.length > 0 ? (
                 filteredData.map((food) => (
                   <tr key={food.name}>
-                    <td onClick={() => clicked()}  className="border-b px-4 py-2">{food.name}</td>
+                    <td onClick={() => clicked()} className="border-b px-4 py-2">
+                      {food.name}
+                    </td>
                     <td className="border-b px-4 py-2">{food.calories}</td>
                     <td className="border-b px-4 py-2 flex items-center justify-center gap-10">
                       <a
@@ -233,7 +255,11 @@ export default function Home() {
                   </tr>
                 ))
               ) : (
-                <div className="text-center">No items available</div>
+                <tr>
+                  <td colSpan="3" className="text-center">
+                    No items available
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>

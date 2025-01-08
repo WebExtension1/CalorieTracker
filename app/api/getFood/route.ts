@@ -20,6 +20,8 @@ export async function GET(request: Request) {
       values.push(Number(typeID));
     }
 
+    query += ' ORDER BY name ASC'
+
     const requestQuery = connection.request();
 
     if (values.length > 0) {
