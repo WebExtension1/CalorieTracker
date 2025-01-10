@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     const connection = await sql.connect(connectionParams);
 
     let query = "UPDATE foods SET calories = @calories";
-    let values = [calories];
+    const values = [calories];
 
     if (newName) {
       if (name.trim() != "") {
