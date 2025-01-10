@@ -108,6 +108,30 @@ export default function Page({ params }) {
         console.error("Fetch error:", err);
         alert('An error occurred. Please try again later.');
     }
+
+    for (i = 0; i < type.length; i++) {
+      let type = type[i];
+      let quantity = quantity[i];
+      try {
+        const response = await fetch('/api/addHistory', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ type, quantity }),
+        });
+  
+        const data = await response.json();
+  
+        if (response.ok) {
+            router.push("/");
+        } else {
+            console.error("Error response:", data);
+            alert('An error occurred. Please try again later.');
+        }
+      } catch (err) {
+          console.error("Fetch error:", err);
+          alert('An error occurred. Please try again later.');
+      }
+    }
   }
 
   if (loading) return <div>Loading Resources...</div>
