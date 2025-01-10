@@ -7,7 +7,7 @@ const connectionParams = GetDBSettings().connectionParams;
 
 export async function POST(request: Request) {
   try {
-    const { calories, name } = await request.json();
+    const { calories, name, newName } = await request.json();
 
     if (!calories || !name) {
       return NextResponse.json({ error: 'Missing parameters' }, { status: 400 });
@@ -16,15 +16,33 @@ export async function POST(request: Request) {
     // Connect to db
     const connection = await sql.connect(connectionParams);
 
-    const query = "UPDATE foods SET calories = @calories WHERE name = @name";
-    const values = [calories, name.split('%20').join(' ')];
-    
-    // Execute and get results
-    const results = await connection.request()
-      .input('calories', sql.Int, values[0])
-      .input('name', sql.NVarChar, values[1])
-      .query(query);
+    let query = "UPDATE foods SET calories = @calories";
+    const values = [calories];
 
+    if (newName) {
+      if (name.trim() != "") {
+        query += ", name = @newName";
+        values.push(newName);
+      }
+    }
+
+    query += " WHERE name = @name";
+    values.push(name.split('%20').join(' '));
+
+    let index = 1;
+
+    const requestQuery = connection.request()
+      .input('calories', sql.Int, values[0]);
+
+    if (values.length === 3) {
+      requestQuery.input('newName', sql.NVarChar, values[1]);
+      index++;
+    }
+
+    requestQuery.input('name', sql.NVarChar, values[index]);
+
+    const results = await requestQuery.query(query);
+      
     // return the results as a JSON API response
     return NextResponse.json(results)
   } catch (err) {

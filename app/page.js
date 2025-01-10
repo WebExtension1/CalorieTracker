@@ -104,14 +104,15 @@ export default function Home() {
     fetchAllData();
   }, []);
 
-  async function addNew() {
-    router.push(`/food/new/${filterType}`);
+  async function addNew(temp) {
+    if (temp) router.push(`/food/new/3`);
+    else router.push(`/food/new/${filterType}`);
   };
 
   async function filterData(event) {
     const query = event?.target?.value?.toLowerCase() || "";
     const filtered = foodData.filter((food) =>
-      food.name.toLowerCase().includes(query)
+      food.name.toLowerCase().includes(query) && food.typeID === filterType
     );
     setFilteredData(filtered);
   };
@@ -125,6 +126,33 @@ export default function Home() {
   function clicked() {
     console.log("Clicked");
   };
+
+  async function deleteItem(e) {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+    const name = formData.get('name');
+    const quantity = formData.get('quantity');
+
+    try {
+      const response = await fetch('/api/removeFromHistory', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, quantity }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+          console.error("Error response:", data);
+          alert('An error occurred. Please try again later.');
+      }
+    } catch (err) {
+        console.error("Fetch error:", err);
+        alert('An error occurred. Please try again later.');
+    }
+    router.refresh();
+  }
 
   if (user?.email != process.env.NEXT_PUBLIC_WHITELISTED_EMAIL) {
     return (
@@ -165,6 +193,7 @@ export default function Home() {
                 <th className="border-b px-4 py-2">Calories</th>
                 <th className="border-b px-4 py-2">Quantity</th>
                 <th className="border-b px-4 py-2">Total</th>
+                <th className="border-b px-4 py-2">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -175,6 +204,13 @@ export default function Home() {
                   <td className="border-b px-4 py-2">{history.calories}</td>
                   <td className="border-b px-4 py-2">{history.quantity}</td>
                   <td className="border-b px-4 py-2">{history.quantity * history.calories}</td>
+                  <td className="border-b px-4 py-2">
+                     <form onSubmit={deleteItem} method="POST" className="flex flex-col gap-6 w-full max-w-md">
+                        <input type="hidden" value={history.name} name="name" />
+                        <input type="hidden" value={history.quantity} name="quantity" />
+                        <button type="submit">Remove</button>
+                      </form>
+                  </td>
                 </tr>
               ))
             ) : (
@@ -205,9 +241,15 @@ export default function Home() {
         <div className="text-center">
           <button
             className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-            onClick={() => addNew()}
+            onClick={() => addNew(false)}
           >
             Add New
+          </button>
+          <button
+            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+            onClick={() => addNew(true)}
+          >
+            Add Temp
           </button>
         </div>
         <div className="flex flex-col gap-2 w-full max-w-md">

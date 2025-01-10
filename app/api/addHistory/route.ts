@@ -10,8 +10,8 @@ export async function POST(request: Request) {
     const { name, quantity } = await request.json();
 
     if (!name || !quantity) {
-        console.error("Missing parameters");
-        return NextResponse.json({ error: 'Missing parameters' }, { status: 400 });
+      console.error("Missing parameters");
+      return NextResponse.json({ error: 'Missing parameters' }, { status: 400 });
     }
 
     // Connect to db

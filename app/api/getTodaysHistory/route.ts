@@ -9,10 +9,15 @@ export async function GET() {
   try {
     // Connect to db
     const connection = await sql.connect(connectionParams)
-    
-    const query = 'SELECT foods.name, foods.calories, history.quantity FROM foods JOIN history ON foods.foodID = history.foodID WHERE CONVERT(date, history.eatenDate) = CONVERT(date, GETDATE());'
 
-    const results = await connection.request()
+    let query = 'DELETE FROM history WHERE eatenDate < CAST(DATEADD(DAY, -1, GETDATE()) AS DATE);'
+
+    let results = await connection.request()
+      .query(query);
+    
+    query = 'SELECT foods.name, foods.calories, history.quantity FROM foods JOIN history ON foods.foodID = history.foodID WHERE CONVERT(date, history.eatenDate) = CONVERT(date, GETDATE());'
+
+    results = await connection.request()
       .query(query);
 
     // return the results as a JSON API response

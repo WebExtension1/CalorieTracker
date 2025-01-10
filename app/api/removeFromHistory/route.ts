@@ -7,29 +7,22 @@ const connectionParams = GetDBSettings().connectionParams;
 
 export async function POST(request: Request) {
   try {
-    const { name } = await request.json();
+    const { name, quantity } = await request.json();
 
-    if (!name) {
+    if (!name || !quantity) {
       return NextResponse.json({ error: 'Missing parameters' }, { status: 400 });
     }
 
     // Connect to db
     const connection = await sql.connect(connectionParams)
 
-    let query = "DELETE FROM history WHERE name = @name";
-    const values = [name.split('%20').join(' ')];
+    const query = 'DELETE TOP (1) h FROM history h INNER JOIN foods f ON f.foodID = h.foodID WHERE f.name = @name AND h.quantity = @quantity;'
+    const values = [name.split('%20').join(' '), quantity];
 
-    query = 'DELETE FROM history WHERE name = @name';
-
-    let results = await connection.request()
-      .input('name', sql.NVarChar, values[0])
-      .query(query)
-
-    query = 'DELETE FROM foods WHERE name = @name';
-    
     // Execute and get results
-    results = await connection.request()
+    const results = await connection.request()
       .input('name', sql.NVarChar, values[0])
+      .input('quantity', sql.Int, values[1])
       .query(query)
 
     // return the results as a JSON API response
