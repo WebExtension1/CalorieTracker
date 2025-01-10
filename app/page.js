@@ -110,8 +110,12 @@ export default function Home() {
 
   async function filterData(event) {
     const query = event?.target?.value?.toLowerCase() || "";
+    const page = "food";
+    if (filterType === 2) {
+      page = "condiment";
+    }
     const filtered = foodData.filter((food) =>
-      food.name.toLowerCase().includes(query)
+      food.name.toLowerCase().includes(query) && food.category = 
     );
     setFilteredData(filtered);
   };
