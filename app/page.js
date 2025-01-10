@@ -105,8 +105,8 @@ export default function Home() {
   }, []);
 
   async function addNew(temp) {
-    if (temp) router.push(`/food/new/${filterType}?type='temp'`);
-    else router.push(`/food/new/${filterType}?type='full'`);
+    if (temp) router.push(`/food/new/3`);
+    else router.push(`/food/new/${filterType}`);
   };
 
   async function filterData(event) {
