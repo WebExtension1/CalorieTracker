@@ -49,7 +49,7 @@ export default function Page({ params }) {
             const response = await fetch('/api/setFood', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ calories, name: slug }),
+                body: JSON.stringify({ calories, name: slug, newName }),
             });
 
             if (!response.ok) {
@@ -94,6 +94,18 @@ export default function Page({ params }) {
             </Link>
             <h1 className="text-xl font-bold text-center sm:text-2xl">{slug.split('%20').join(' ')}</h1>
             <form onSubmit={handleUpdate} className="flex flex-col gap-4 w-full max-w-md mx-auto">
+                <label htmlFor="calories" className="text-sm sm:text-base font-semibold">
+                    New name
+                </label>
+                <input
+                    type="text"
+                    value={newName}
+                    onChange={(e) => setNewName(e.target.value)}
+                    name="newName"
+                    className="w-full px-4 py-2 border rounded text-gray-300 bg-black focus:ring focus:ring-blue-300"
+                    placeholder="Enter new name (if applicable)"
+                    required
+                />
                 <label htmlFor="calories" className="text-sm sm:text-base font-semibold">
                     Calories
                 </label>
