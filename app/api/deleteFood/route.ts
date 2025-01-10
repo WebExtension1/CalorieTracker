@@ -16,11 +16,19 @@ export async function POST(request: Request) {
     // Connect to db
     const connection = await sql.connect(connectionParams)
 
-    const query = 'DELETE FROM foods WHERE name = @name'
+    let query = "DELETE FROM history WHERE name = @name";
     const values = [name.split('%20').join(' ')];
 
+    query = 'DELETE FROM history WHERE name = @name';
+
+    let results = await connection.request()
+      .input('name', sql.NVarChar, values[0])
+      .query(query)
+
+    query = 'DELETE FROM foods WHERE name = @name';
+    
     // Execute and get results
-    const results = await connection.request()
+    results = await connection.request()
       .input('name', sql.NVarChar, values[0])
       .query(query)
 
