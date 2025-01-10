@@ -12,6 +12,7 @@ export default function Page({ params }) {
     const resolvedParams = use(params);
     const slug = resolvedParams.slug;
     const [calories, setCalories] = useState(0);
+    const [newName, setNewName] = useState();
 
     useEffect(() => {
     if (loading) return;
