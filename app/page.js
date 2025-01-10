@@ -321,11 +321,12 @@ export async function POST(request: Request) {
     const connection = await sql.connect(connectionParams)
 
     const query = 'DELETE FROM history WHERE eatenDate = GETDATE() AND name = @name AND quantity = @quantity LIMIT 1'
-    const values = [name.split('%20').join(' ')];
+    const values = [name.split('%20').join(' '), quantity];
 
     // Execute and get results
     const results = await connection.request()
       .input('name', sql.NVarChar, values[0])
+      .input('name', sql.Int, values[1])
       .query(query)
 
     // return the results as a JSON API response
