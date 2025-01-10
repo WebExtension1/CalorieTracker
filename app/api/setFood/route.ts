@@ -27,13 +27,21 @@ export async function POST(request: Request) {
 
     query += " WHERE name = @name";
     values.push(name.split('%20').join(' '));
-    
-    // Execute and get results
-    const results = await connection.request()
-      .input('calories', sql.Int, values[0])
-      .input('name', sql.NVarChar, values[1])
-      .query(query);
 
+    let index = 1;
+
+    let requestQuery = connection.request()
+      .input('calories', sql.Int, values[0])
+
+    if (values.length === 3) {
+      requestQuery.input('newName', sql.NVarChar, values[1]);
+      index++;
+    }
+
+    requestQuery.input('name', sql.NVarChar, values[index])
+
+    const results = await requestQuery.query(query);
+      
     // return the results as a JSON API response
     return NextResponse.json(results)
   } catch (err) {
