@@ -126,6 +126,29 @@ export default function Home() {
     console.log("Clicked");
   };
 
+  async function deleteItem(e) {
+    e.preventDefault();
+    try {
+    const response = await fetch('/api/removeFromHistory', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, quantity }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+        router.push("/");
+    } else {
+        console.error("Error response:", data);
+        alert('An error occurred. Please try again later.');
+    }
+} catch (err) {
+    console.error("Fetch error:", err);
+    alert('An error occurred. Please try again later.');
+}
+  }
+
   if (user?.email != process.env.NEXT_PUBLIC_WHITELISTED_EMAIL) {
     return (
       <div className="flex flex-col min-h-screen p-4 gap-8 sm:p-8 sm:gap-16 font-sans">
@@ -165,6 +188,7 @@ export default function Home() {
                 <th className="border-b px-4 py-2">Calories</th>
                 <th className="border-b px-4 py-2">Quantity</th>
                 <th className="border-b px-4 py-2">Total</th>
+                <th className="border-b px-4 py-2">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -175,6 +199,13 @@ export default function Home() {
                   <td className="border-b px-4 py-2">{history.calories}</td>
                   <td className="border-b px-4 py-2">{history.quantity}</td>
                   <td className="border-b px-4 py-2">{history.quantity * history.calories}</td>
+                  <td className="border-b px-4 py-2">
+                     <form onSubmit={deleteItem} method="POST" className="flex flex-col gap-6 w-full max-w-md">
+                        <input type="hidden" value="{history.name}" name="name" />
+                        <input type="hidden" value="{history.quantity}" name="quantity" />
+                        <button type="submit">Remove</button>
+                      </form>
+                  </td>
                 </tr>
               ))
             ) : (
@@ -268,3 +299,48 @@ export default function Home() {
     );
   }
 }
+
+/* /api/removeFromHistory
+
+import { NextResponse } from 'next/server'
+import sql from 'mssql'
+import { GetDBSettings } from '@/sharedCode/common'
+
+// Get the connection parameters
+const connectionParams = GetDBSettings().connectionParams;
+
+export async function POST(request: Request) {
+  try {
+    const { name, quantity } = await request.json();
+
+    if (!name || !quantity) {
+      return NextResponse.json({ error: 'Missing parameters' }, { status: 400 });
+    }
+
+    // Connect to db
+    const connection = await sql.connect(connectionParams)
+
+    const query = 'DELETE FROM history WHERE eatenDate = GETDATE() AND name = @name AND quantity = @quantity LIMIT 1'
+    const values = [name.split('%20').join(' ')];
+
+    // Execute and get results
+    const results = await connection.request()
+      .input('name', sql.NVarChar, values[0])
+      .query(query)
+
+    // return the results as a JSON API response
+    return NextResponse.json(results)
+  } catch (err) {
+    console.log('ERROR: API - ', (err as Error).message)
+
+    const response = {
+      error: (err as Error).message,
+
+      returnedStatus: 200,
+    }
+
+    return NextResponse.json(response, { status: 200 })
+  }
+}
+
+*/
