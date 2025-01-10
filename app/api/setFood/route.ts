@@ -31,7 +31,7 @@ export async function POST(request: Request) {
     let index = 1;
 
     let requestQuery = connection.request()
-      .input('calories', sql.Int, values[0])
+      .input('calories', sql.Int, values[0]);
 
     if (values.length === 3) {
       requestQuery.input('newName', sql.NVarChar, values[1]);
