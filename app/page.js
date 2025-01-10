@@ -129,25 +129,29 @@ export default function Home() {
 
   async function deleteItem(e) {
     e.preventDefault();
+
+    const formData = new FormData(e.target);
+    const name = formData.get('name');
+    const quantity = formData.get('quantity');
+
     try {
-    const response = await fetch('/api/removeFromHistory', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, quantity }),
-    });
+      const response = await fetch('/api/removeFromHistory', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, quantity }),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (response.ok) {
-        router.push("/");
-    } else {
-        console.error("Error response:", data);
+      if (!response.ok) {
+          console.error("Error response:", data);
+          alert('An error occurred. Please try again later.');
+      }
+    } catch (err) {
+        console.error("Fetch error:", err);
         alert('An error occurred. Please try again later.');
     }
-} catch (err) {
-    console.error("Fetch error:", err);
-    alert('An error occurred. Please try again later.');
-}
+    router.refresh();
   }
 
   if (user?.email != process.env.NEXT_PUBLIC_WHITELISTED_EMAIL) {

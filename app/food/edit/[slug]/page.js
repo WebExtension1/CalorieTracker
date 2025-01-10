@@ -105,7 +105,6 @@ export default function Page({ params }) {
                     name="newName"
                     className="w-full px-4 py-2 border rounded text-gray-300 bg-black focus:ring focus:ring-blue-300"
                     placeholder="Enter new name (if applicable)"
-                    required
                 />
                 <label htmlFor="calories" className="text-sm sm:text-base font-semibold">
                     Calories

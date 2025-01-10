@@ -16,13 +16,13 @@ export async function POST(request: Request) {
     // Connect to db
     const connection = await sql.connect(connectionParams)
 
-    const query = 'DELETE FROM history WHERE eatenDate = GETDATE() AND name = @name AND quantity = @quantity LIMIT 1'
+    const query = 'DELETE TOP (1) h FROM history h INNER JOIN foods f ON f.foodID = h.foodID WHERE f.name = @name AND h.quantity = @quantity;'
     const values = [name.split('%20').join(' '), quantity];
 
     // Execute and get results
     const results = await connection.request()
       .input('name', sql.NVarChar, values[0])
-      .input('name', sql.Int, values[1])
+      .input('quantity', sql.Int, values[1])
       .query(query)
 
     // return the results as a JSON API response

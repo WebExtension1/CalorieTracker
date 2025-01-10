@@ -19,7 +19,8 @@ export default function Page({ params }) {
       try {
         const res = await fetch("/api/getFood?typeID=2");
         const data = await res.json();
-        setFoodData(data);
+        setFoodData(data.recordsets[0]);
+        console.log(data.recordsets[0]);
       } catch (error) {
         console.error("Error fetching food data:", error);
       }
@@ -67,7 +68,7 @@ export default function Page({ params }) {
     const quantityInput = document.createElement("input");
     quantityInput.setAttribute("min", "0");
     quantityInput.setAttribute("type", "number");
-    quantityInput.setAttribute("name", "quantity[]")
+    quantityInput.setAttribute("name", "quantityAll[]")
     quantityInput.setAttribute("class", "w-full px-4 py-2 border rounded text-gray-300 bg-black focus:ring focus:ring-blue-300");
     quantityInput.required = true;
     newCondiment.appendChild(quantityInput);
@@ -89,49 +90,54 @@ export default function Page({ params }) {
 
   async function addToHistory(e) {
     e.preventDefault();
+
+    let name = slug.split('%20').join(' ');
+    const formData = new FormData(e.target);
+    const types = formData.getAll('type[]');
+    const quantities = formData.getAll('quantityAll[]').map((q) => parseInt(q, 10));
+    let quantity = formData.get('quantity');
+
     try {
       const response = await fetch('/api/addHistory', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: slug.split('%20').join(' '), quantity }),
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, quantity }),
       });
 
       const data = await response.json();
 
-      if (response.ok) {
-          router.push("/");
-      } else {
-          console.error("Error response:", data);
-          alert('An error occurred. Please try again later.');
+      if (!response.ok) {
+        console.error("Error response:", data);
+        alert('An error occurred. Please try again later.');
       }
     } catch (err) {
-        console.error("Fetch error:", err);
-        alert('An error occurred. Please try again later.');
+      console.error("Fetch error:", err);
+      alert('An error occurred. Please try again later.');
     }
 
-    for (i = 0; i < type.length; i++) {
-      let type = type[i];
-      let quantity = quantity[i];
+    for (let i = 0; i < types.length; i++) {
+      let name = types[i];
+      quantity = quantities[i];
       try {
         const response = await fetch('/api/addHistory', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ type, quantity }),
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, quantity }),
         });
   
         const data = await response.json();
   
-        if (response.ok) {
-            router.push("/");
-        } else {
-            console.error("Error response:", data);
-            alert('An error occurred. Please try again later.');
+        if (!response.ok) {
+          console.error("Error response:", data);
+          alert('An error occurred. Please try again later.');
         }
       } catch (err) {
-          console.error("Fetch error:", err);
-          alert('An error occurred. Please try again later.');
+        console.error("Fetch error:", err);
+        alert('An error occurred. Please try again later.');
       }
     }
+
+    router.push('/');
   }
 
   if (loading) return <div>Loading Resources...</div>
@@ -145,7 +151,7 @@ export default function Page({ params }) {
           Back to Dashboard
       </Link>
       <h1 className="text-xl font-bold text-center sm:text-2xl">{slug.split('%20').join(' ')}</h1>
-      <form method="POST" className="flex flex-col gap-4 w-full max-w-md mx-auto">
+      <form className="flex flex-col gap-4 w-full max-w-md mx-auto" onSubmit={addToHistory}>
         <label htmlFor="quantity" className="text-sm sm:text-base font-semibold">
             Quantity
         </label>
@@ -163,7 +169,7 @@ export default function Page({ params }) {
         <a className="cursor-pointer text-blue-500 hover:underline" onClick={addCondiment}>Add Condiment</a>
         <div id="condiments"></div>
         <button 
-          onClick={addToHistory}
+          type="submit"
           className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 mt-4"
         >
           Add to History

@@ -20,9 +20,10 @@ export async function POST(request: Request) {
     let values = [calories];
 
     if (newName) {
-      if (trim(name) != "") {
+      if (name.trim() != "") {
         query += ", name = @newName";
         values.push(newName);
+      }
     }
 
     query += " WHERE name = @name";
