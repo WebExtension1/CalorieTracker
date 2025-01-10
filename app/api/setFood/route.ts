@@ -21,8 +21,8 @@ export async function POST(request: Request) {
 
     if (newName) {
       if (trim(name) != "") {
-        query += ", name = @newName"
-        values.push(newName)
+        query += ", name = @newName";
+        values.push(newName);
     }
 
     query += " WHERE name = @name";
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
       index++;
     }
 
-    requestQuery.input('name', sql.NVarChar, values[index])
+    requestQuery.input('name', sql.NVarChar, values[index]);
 
     const results = await requestQuery.query(query);
       
