@@ -201,8 +201,8 @@ export default function Home() {
                   <td className="border-b px-4 py-2">{history.quantity * history.calories}</td>
                   <td className="border-b px-4 py-2">
                      <form onSubmit={deleteItem} method="POST" className="flex flex-col gap-6 w-full max-w-md">
-                        <input type="hidden" value="{history.name}" name="name" />
-                        <input type="hidden" value="{history.quantity}" name="quantity" />
+                        <input type="hidden" value={history.name} name="name" />
+                        <input type="hidden" value={history.quantity} name="quantity" />
                         <button type="submit">Remove</button>
                       </form>
                   </td>
