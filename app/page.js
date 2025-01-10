@@ -104,8 +104,9 @@ export default function Home() {
     fetchAllData();
   }, []);
 
-  async function addNew() {
-    router.push(`/food/new/${filterType}`);
+  async function addNew(temp) {
+    if (temp) router.push(`/food/new/${filterType}?type='temp'`);
+    else router.push(`/food/new/${filterType}?type='full'`);
   };
 
   async function filterData(event) {
@@ -236,9 +237,15 @@ export default function Home() {
         <div className="text-center">
           <button
             className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-            onClick={() => addNew()}
+            onClick={() => addNew(false)}
           >
             Add New
+          </button>
+          <button
+            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+            onClick={() => addNew(true)}
+          >
+            Add Temp
           </button>
         </div>
         <div className="flex flex-col gap-2 w-full max-w-md">
