@@ -17,6 +17,7 @@ export default function Home() {
   const [todaysLimit, setTodaysLimit] = useState();
   const [todaysAmount, setTodaysAmount] = useState();
   const [message, setMessage] = useState();
+  const [letters, setLetters] = useState([]);
 
   useEffect(() => {
     if (loading) return;
@@ -114,7 +115,21 @@ export default function Home() {
     const filtered = foodData.filter((food) =>
       food.name.toLowerCase().includes(query) && food.typeID === filterType
     );
-    setFilteredData(filtered);
+
+    const grouped = {};
+  
+    filtered.forEach((item) => {
+      if (item.typeID === filterType) {
+        const firstLetter = item.name[0].toUpperCase();
+        if (!grouped[firstLetter]) {
+          grouped[firstLetter] = [];
+        }
+        grouped[firstLetter].push(item);
+      }
+    });
+
+    setFoodData(grouped);
+    setLetters(Object.keys(grouped).sort());
   };
 
   useEffect(() => {
@@ -153,6 +168,15 @@ export default function Home() {
           newTodaysCalories.splice(position, 1);
           return newTodaysCalories;
         });
+
+        const calories = foodData.find(item => item.name === name).calories;
+        const newAmount = todaysAmount - (quantity * calories)
+        setTodaysAmount(newAmount);
+
+        let newMessage = "You have reached your limit for the day";
+        if (newAmount < todaysLimit) newMessage = `You have ${todaysLimit - newAmount} calories left today`;
+        else if (newAmount > todaysLimit) newMessage = `You have gone ${newAmount - todaysLimit} calories over your limit today`;
+        setMessage(newMessage);
       }
     } catch (err) {
       console.error("Fetch error:", err);
@@ -226,7 +250,7 @@ export default function Home() {
                 <td colSpan={4} className="border-b px-4 py-2 text-center">No data available</td>
               </tr>
             )}
-          </tbody>
+            </tbody>
           </table>
         </div>
         <div className="flex flex-col sm:flex-row gap-4 sm:gap-7">
@@ -269,50 +293,44 @@ export default function Home() {
             />
         </div>
 
-        <div className="flex flex-col gap-6">
-          <table className="table-auto w-full border-collapse mt-4 text-sm sm:text-base text-center">
-            <thead>
-              <tr>
-                <th className="border-b px-4 py-2">Name</th>
-                <th className="border-b px-4 py-2">Calories</th>
-                <th className="border-b px-4 py-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredData.length > 0 ? (
-                filteredData.map((food) => (
-                  <tr key={food.name}>
-                    <td onClick={() => clicked()} className="border-b px-4 py-2">
-                      {food.name}
-                    </td>
-                    <td className="border-b px-4 py-2">{food.calories}</td>
-                    <td className="border-b px-4 py-2 flex items-center justify-center gap-10">
-                      <a
-                        href={`/food/edit/${food.name}`}
-                        className="text-blue-500 hover:underline"
-                      >
-                        Edit
-                      </a>
-                      {filterType === 1 && (
-                        <a
-                          href={`/food/${food.name}`}
-                          className="text-green-500 hover:underline"
-                        >
-                          +
-                        </a>
-                      )}
-                    </td>
+        <div className="flex flex-wrap justify-center gap-2 mt-2">
+          {letters.map((letter) => (
+            <button
+              key={letter}
+              onClick={() => document.getElementById(letter).scrollIntoView()}
+              className="text-sm p-2 hover:bg-gray-200"
+            >
+              {letter}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-4">
+          {letters.map((letter) => (
+            <div key={letter}>
+              <h2 id={letter} className="font-semibold text-xl mt-6">{letter}</h2>
+              <table className="table-auto w-full mt-4 text-sm sm:text-base text-center">
+                <thead>
+                  <tr>
+                    <th className="border-b px-4 py-2">Name</th>
+                    <th className="border-b px-4 py-2">Calories</th>
+                    <th className="border-b px-4 py-2">Actions</th>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="3" className="text-center">
-                    No items available
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                </thead>
+                <tbody>
+                  {foodData[letter]?.map((food) => (
+                    <tr key={food.name}>
+                      <td className="border-b px-4 py-2">{food.name}</td>
+                      <td className="border-b px-4 py-2">{food.calories}</td>
+                      <td className="border-b px-4 py-2">
+                        <a href={`/food/edit/${food.name}`} className="text-blue-500 hover:underline">Edit</a>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ))}
         </div>
       </div>
     );

@@ -5,13 +5,19 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --odd-colour: #e4e4e4;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --odd-colour: #1a1919;
   }
+}
+
+table tr:nth-child(odd) {
+  background-color: var(--odd-colour);
 }
 
 body {
