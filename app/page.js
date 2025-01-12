@@ -138,10 +138,6 @@ export default function Home() {
 
   if (loading) return <div>Loading Resources...</div>
 
-  function clicked() {
-    console.log("Clicked");
-  };
-
   async function deleteItem(e) {
     e.preventDefault();
 
