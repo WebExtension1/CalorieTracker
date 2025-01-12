@@ -128,7 +128,7 @@ export default function Home() {
       }
     });
 
-    setFoodData(grouped);
+    setFilteredData(grouped);
     setLetters(Object.keys(grouped).sort());
   };
 
@@ -309,21 +309,29 @@ export default function Home() {
           {letters.map((letter) => (
             <div key={letter}>
               <h2 id={letter} className="font-semibold text-xl mt-6">{letter}</h2>
-              <table className="table-auto w-full mt-4 text-sm sm:text-base text-center">
+              <table className="table-auto w-full mt-2 text-sm sm:text-base text-center">
                 <thead>
                   <tr>
-                    <th className="border-b px-4 py-2">Name</th>
-                    <th className="border-b px-4 py-2">Calories</th>
-                    <th className="border-b px-4 py-2">Actions</th>
+                    <th className="border-b px-4 py-2 w-1/2">Name</th>
+                    <th className="border-b px-4 py-2 w-1/8">Calories</th>
+                    <th className="border-b px-4 py-2 2-1/8">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {foodData[letter]?.map((food) => (
+                  {filteredData[letter]?.map((food) => (
                     <tr key={food.name}>
                       <td className="border-b px-4 py-2">{food.name}</td>
                       <td className="border-b px-4 py-2">{food.calories}</td>
-                      <td className="border-b px-4 py-2">
+                      <td className="border-b px-4 py-2 flex items-center justify-center gap-10">
                         <a href={`/food/edit/${food.name}`} className="text-blue-500 hover:underline">Edit</a>
+                        {filterType === 1 && (
+                        <a
+                          href={`/food/${food.name}`}
+                          className="text-green-500 hover:underline"
+                        >
+                          +
+                        </a>
+                      )}
                       </td>
                     </tr>
                   ))}
