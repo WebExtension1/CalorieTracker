@@ -133,23 +133,30 @@ export default function Home() {
     const formData = new FormData(e.target);
     const name = formData.get('name');
     const quantity = formData.get('quantity');
+    const position = formData.get('position');
 
     try {
       const response = await fetch('/api/removeFromHistory', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, quantity }),
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, quantity }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-          console.error("Error response:", data);
-          alert('An error occurred. Please try again later.');
+        console.error("Error response:", data);
+        alert('An error occurred. Please try again later.');
+      } else {
+        setTodaysCalories((prevTodaysCalories) => {
+          const newTodaysCalories = [...prevTodaysCalories];
+          newTodaysCalories.splice(position, 1);
+          return newTodaysCalories;
+        });
       }
     } catch (err) {
-        console.error("Fetch error:", err);
-        alert('An error occurred. Please try again later.');
+      console.error("Fetch error:", err);
+      alert('An error occurred. Please try again later.');
     }
     router.refresh();
   }
@@ -206,6 +213,7 @@ export default function Home() {
                   <td className="border-b px-4 py-2">{history.quantity * history.calories}</td>
                   <td className="border-b px-4 py-2">
                      <form onSubmit={deleteItem} method="POST" className="flex flex-col gap-6 w-full max-w-md">
+                        <input type="hidden" value={index} name="position"/>
                         <input type="hidden" value={history.name} name="name" />
                         <input type="hidden" value={history.quantity} name="quantity" />
                         <button type="submit">Remove</button>
