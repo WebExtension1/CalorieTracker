@@ -25,27 +25,6 @@ export default function Home() {
       router.push('/login');
     }
   }, [user, loading, router]);
-  
-  useEffect(() => {
-    const fetchFoodData = async () => {
-      try {
-        const res = await fetch("/api/getFood");
-        const data = await res.json();
-        console.log("/getFood:", data);
-        
-        if (data && data.recordsets && data.recordsets[0]) {
-          console.log("/getFood:", data.recordsets[0]);
-          setFoodData(data.recordsets[0]);
-        } else {
-          console.error("Invalid response structure:", data);
-        }
-
-      } catch (error) {
-        console.error("Error fetching food data:", error);
-      }
-    };
-    fetchFoodData();
-  }, []);
 
   useEffect(() => {
     const fetchAllData = async () => {
