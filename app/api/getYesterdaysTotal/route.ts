@@ -10,7 +10,7 @@ export async function GET() {
     // Connect to db
     const connection = await sql.connect(connectionParams)
     
-    const query = 'SELECT SUM(foods.calories * history.quantity) AS total_calories FROM foods JOIN history ON foods.foodID = history.foodID WHERE history.eatenDate = CAST(DATEADD(DAY, -1, GETDATE()) AS DATE);'
+    const query = 'SELECT SUM(foods.calories * history.quantity) AS total_calories FROM foods JOIN history ON foods.foodID = history.foodID WHERE history.eatenDate >= CAST(DATEADD(DAY, -1, GETDATE()) AS DATE) AND history.eatenDate < CAST(GETDATE() AS DATE);'
 
     // Execute and get results
     const results = await connection.request()

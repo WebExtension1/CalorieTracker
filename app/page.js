@@ -34,8 +34,8 @@ export default function Home() {
         console.log("/getYesterdaysTotal:", yesterdayData);
 
         if (yesterdayData && yesterdayData.recordsets && yesterdayData.recordsets[0]) {
-          console.log("/getYesterdaysTotal:", yesterdayData.recordsets[0]);
-          const yesterdayCalories = yesterdayData.recordsets[0][0]?.total_calories || 0;
+          console.log("/getYesterdaysTotal recordset:", yesterdayData.recordsets[0]);
+          const yesterdayCalories = yesterdayData.recordsets[0][0]?.total_calories || process.env.NEXT_PUBLIC_CALORIE_LIMIT;
           const remainingCalories = parseInt(process.env.NEXT_PUBLIC_CALORIE_LIMIT) - yesterdayCalories;
           setYesterdayRemaining(remainingCalories);
   
